@@ -3,57 +3,55 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using WebApi.Models;
 
-namespace WebApi.Controllers;
-
-[Route("api/[controller]")]
-[ApiController]
-
-public class UsersController : ControllerBase
+namespace WebApi.Controllers
 {
-    private static List<UserModel> _users =
-        [
-            new UserModel { FirstName = "Hans", LastName = "Mattin-Lassei", Email = "hans@domain.com" },
-            new UserModel { FirstName = "Tommy", LastName = "Mattin-Lassei", Email = "tommy@domain.com" },
-        ];
-
-    [HttpGet]
-    public IActionResult GetAll()
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UsersController : ControllerBase
     {
-        return Ok(_users);
-    }
-
-    [HttpGet("{id}")]
-
-    public IActionResult GetOne(string id)
-    {  
-        var user = _users.FirstOrDefault(x => x.Id == id);
-        if (user != null)
+        private static List<UserModel> _users = new List<UserModel>
         {
-            return Ok(user);
+            new UserModel { FirstName = "William", LastName = "Björklund", Email = "wb@gmail.com" },
+            new UserModel { FirstName = "Anton", LastName = "Håkansson", Email = "Håkansson@gmail.com" },
+        };
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return Ok(_users);
         }
 
-        return NotFound();
-    }
-
-    [HttpPost]
-    public IActionResult CreateOne(UserRequestModel model)
-    {
-        if (ModelState.IsValid)
+        [HttpGet("{id}")]
+        public IActionResult GetOne(string id)
         {
-            var userModel = new UserModel
+            var user = _users.FirstOrDefault(x => x.Id == id);
+            if (user != null)
             {
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                Email = model.Email,
-            };
+                return Ok(user);
+            }
 
-            return Created("", userModel);
+            return NotFound();
         }
 
-        return BadRequest(model);
+        [HttpPost]
+        public IActionResult CreateOne(UserRequestModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var userModel = new UserModel
+                {
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    Email = model.Email,
+                };
+
+                _users.Add(userModel);
+
+                return Created("", userModel);
+            }
+
+            return BadRequest(ModelState);
+        }
     }
 }
-
-
-
 
